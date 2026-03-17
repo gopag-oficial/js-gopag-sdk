@@ -101,6 +101,26 @@ class GoPagSDK {
   }
 
   /**
+   * Encodes values to Base64 (UTF-8 safe)
+   * @private
+   * @param {Object|string} value - Value to encode
+   * @returns {string} Base64 string
+   */
+  _toBase64(value) {
+    const stringValue = typeof value === 'string' ? value : JSON.stringify(value);
+
+    if (typeof btoa === 'function') {
+      return btoa(unescape(encodeURIComponent(stringValue)));
+    }
+
+    if (typeof Buffer !== 'undefined') {
+      return Buffer.from(stringValue, 'utf-8').toString('base64');
+    }
+
+    throw new Error('Base64 encoding is not supported in this environment');
+  }
+
+  /**
    * Tokenizes credit card data via Zoop API
    * @param {Object} cardData - Card data
    * @param {string} cardData.holder_name - Cardholder name
@@ -428,6 +448,8 @@ class GoPagSDK {
         } : null,
         three_d_secure: threeDSResult.enabled ? threeDSResult.three_d_secure : null
       };
+
+      result.pciTokenSdk = this._toBase64(result);
 
       return result;
 

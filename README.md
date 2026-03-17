@@ -22,6 +22,16 @@ SDK JavaScript for credit card tokenization via Zoop API, maintaining PCI DSS co
 npm install js-gopag-sdk
 ```
 
+### Via CDN
+
+```html
+<!-- jsDelivr -->
+<script src="https://cdn.jsdelivr.net/npm/js-gopag-sdk/dist/gopag-sdk.umd.js"></script>
+
+<!-- unpkg -->
+<script src="https://unpkg.com/js-gopag-sdk/dist/gopag-sdk.umd.js"></script>
+```
+
 ### Via Local Build
 
 ```html
@@ -536,7 +546,7 @@ export class CheckoutComponent {
 
   constructor() {
     this.gopag = new GoPagSDK({
-      publishableKey: 'zpk_prod_xxxxx',
+      publishableKey: 'your_publishable_key',
       marketplaceId: 'your_marketplace_id',
       environment: 'production',
       enable3DS: true
@@ -693,4 +703,4 @@ POST https://api.zoop.ws/v1/marketplaces/{marketplace_id}/cards/tokens
 
 ## 📞 Support
 
-Contact support@gopag.com.br
+Contact: suporte@gopag.com.br
