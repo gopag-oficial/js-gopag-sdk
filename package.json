@@ -1,0 +1,41 @@
+{
+  "name": "js-gopag-sdk",
+  "version": "1.0.0",
+  "description": "SDK JavaScript para tokenização de cartões de crédito GOPAG API, mantendo conformidade PCI DSS Zoop",
+  "type": "module",
+  "main": "dist/gopag-sdk.cjs.js",
+  "module": "dist/gopag-sdk.esm.js",
+  "browser": "dist/gopag-sdk.umd.js",
+  "unpkg": "dist/gopag-sdk.umd.min.js",
+  "jsdelivr": "dist/gopag-sdk.umd.min.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "gopag",
+    "zoop",
+    "payment",
+    "tokenization",
+    "credit-card",
+    "pci-dss",
+    "checkout",
+    "sdk"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "rollup": "^4.9.6"
+  },
+  "dependencies": {}
+}
