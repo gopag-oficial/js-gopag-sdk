@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exemplo: GoPag SDK</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      padding: 40px;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    label {
+      display: block;
+      color: #555;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e1e8ed;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .row {
+      display: flex;
+      gap: 15px;
+    }
+
+    .row .form-group {
+      flex: 1;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .result {
+      margin-top: 25px;
+      padding: 20px;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .result.success {
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+    }
+
+    .result.error {
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+    }
+
+    .result h3 {
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+
+    .result pre {
+      background: rgba(0,0,0,0.05);
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-size: 12px;
+      margin-top: 10px;
+    }
+
+    .card-brand {
+      display: inline-block;
+      margin-top: 5px;
+      padding: 4px 12px;
+      background: #667eea;
+      color: white;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .input-loading::after {
+      content: '⏳';
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .test-buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .test-btn {
+      flex: 1;
+      padding: 10px;
+      background: #f0f0f0;
+      color: #333;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .test-btn:hover:not(:disabled) {
+      background: #e0e0e0;
+      border-color: #ccc;
+    }
+
+    .test-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .section-divider {
+      border-top: 2px solid #e1e8ed;
+      margin: 30px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>💳 GoPag SDK</h1>
+    <p class="subtitle">Exemplo de tokenização de cartão com Vanilla JavaScript</p>
+
+    <!-- Test Buttons -->
+    <div class="test-buttons">
+      <button type="button" class="test-btn" id="test-3ds-btn">
+        🔒 Testar 3DS
+      </button>
+      <button type="button" class="test-btn" id="test-recaptcha-btn">
+        🤖 Testar reCAPTCHA
+      </button>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <form id="payment-form">
+      <div class="form-group">
+        <label for="cardholder-name">Nome do Titular</label>
+        <input type="text" id="cardholder-name" placeholder="João da Silva" required>
+      </div>
+
+      <div class="form-group">
+        <label for="card-number">Número do Cartão</label>
+        <input type="text" id="card-number" placeholder="4111 1111 1111 1111" maxlength="19" required>
+        <span id="card-brand" class="card-brand" style="display: none;"></span>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label for="expiry-month">Mês</label>
+          <input type="text" id="expiry-month" placeholder="12" maxlength="2" required>
+        </div>
+
+        <div class="form-group">
+          <label for="expiry-year">Ano</label>
+          <input type="text" id="expiry-year" placeholder="2025" maxlength="4" required>
+        </div>
+
+        <div class="form-group">
+          <label for="cvv">CVV</label>
+          <input type="text" id="cvv" placeholder="123" maxlength="4" required>
+        </div>
+      </div>
+
+      <h3 style="margin-top: 30px; margin-bottom: 15px; color: #333; font-size: 18px;">Dados de Cobrança (3DS)</h3>
+
+      <div class="form-group">
+        <label for="postal-code">CEP</label>
+        <input type="text" id="postal-code" placeholder="74000-000" maxlength="9" required>
+      </div>
+
+      <div class="form-group">
+        <label for="address">Endereço</label>
+        <input type="text" id="address" placeholder="Rua Example, 123" required>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label for="city">Cidade</label>
+          <input type="text" id="city" placeholder="Goiânia" required>
+        </div>
+
+        <div class="form-group">
+          <label for="state">Estado (UF)</label>
+          <input type="text" id="state" placeholder="GO" maxlength="2" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="user@example.com" required>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Telefone</label>
+        <input type="tel" id="phone" placeholder="62991838359" required>
+      </div>
+
+      <button type="submit" id="submit-btn">
+        🔒 Tokenizar Cartão
+      </button>
+    </form>
+
+    <div id="result" class="result">
+      <h3 id="result-title"></h3>
+      <div id="result-content"></div>
+    </div>
+  </div>
+
+  <!-- Google reCAPTCHA v3 -->
+  <script src="https://www.google.com/recaptcha/api.js?render=**************REPLACE**************"></script>
+
+  <!-- SDK do GoPag -->
+  <script src="../dist/gopag-sdk.umd.js"></script>
+
+  <script>
+    // Inicializar SDK
+    const gopag = new GoPagSDK({
+      publishableKey: '**************REPLACE**************',
+      marketplaceId: '**************REPLACE**************',
+      environment: 'production',
+      enable3DS: true,
+      recaptchaSiteKey: '**************REPLACE**************'
+    });
+
+    // Elementos do DOM
+    const form = document.getElementById('payment-form');
+    const cardNumberInput = document.getElementById('card-number');
+    const cardBrandSpan = document.getElementById('card-brand');
+    const submitBtn = document.getElementById('submit-btn');
+    const test3DSBtn = document.getElementById('test-3ds-btn');
+    const testRecaptchaBtn = document.getElementById('test-recaptcha-btn');
+    const resultDiv = document.getElementById('result');
+    const resultTitle = document.getElementById('result-title');
+    const resultContent = document.getElementById('result-content');
+    const postalCodeInput = document.getElementById('postal-code');
+    const addressInput = document.getElementById('address');
+    const cityInput = document.getElementById('city');
+    const stateInput = document.getElementById('state');
+    const phoneInput = document.getElementById('phone');
+
+    // Test 3DS Button
+    test3DSBtn.addEventListener('click', async () => {
+      test3DSBtn.disabled = true;
+      test3DSBtn.textContent = '⏳ Testando...';
+      resultDiv.style.display = 'none';
+
+      try {
+        const result = await gopag.get3DSData({
+          billing: {
+            address: addressInput.value || 'Rua Teste, 123',
+            city: cityInput.value || 'Goiânia',
+            postal_code: postalCodeInput.value.replace(/\D/g, '') || '74000000',
+            state: stateInput.value || 'GO',
+            country: 'BR',
+            email_address: document.getElementById('email').value || 'test@example.com',
+            phone_number: phoneInput.value || '62999999999'
+          }
+        });
+
+        if (result.success && result.enabled) {
+          showResult('success', '✅ 3DS Data coletado com sucesso!', result);
+        } else {
+          showResult('error', '❌ Erro ao coletar 3DS', result);
+        }
+      } catch (error) {
+        showResult('error', '❌ Erro no teste 3DS', { error: error.message });
+      } finally {
+        test3DSBtn.disabled = false;
+        test3DSBtn.textContent = '🔒 Testar 3DS';
+      }
+    });
+
+    // Test reCAPTCHA Button
+    testRecaptchaBtn.addEventListener('click', async () => {
+      testRecaptchaBtn.disabled = true;
+      testRecaptchaBtn.textContent = '⏳ Testando...';
+      resultDiv.style.display = 'none';
+
+      try {
+        console.log('Iniciando teste reCAPTCHA...');
+        const result = await gopag.tokenizeRecaptcha('test_action');
+        console.log('Resultado reCAPTCHA:', result);
+
+        if (result.success) {
+          if (result.enabled) {
+            showResult('success', '✅ reCAPTCHA validado com sucesso!', result);
+          } else {
+            showResult('success', 'ℹ️ reCAPTCHA não configurado', {
+              message: result.message,
+              enabled: result.enabled,
+              success: result.success
+            });
+          }
+        } else {
+          showResult('error', '❌ Erro no reCAPTCHA', result);
+        }
+      } catch (error) {
+        console.error('Erro no teste reCAPTCHA:', error);
+        showResult('error', '❌ Erro no teste reCAPTCHA', { error: error.message });
+      } finally {
+        testRecaptchaBtn.disabled = false;
+        testRecaptchaBtn.textContent = '🤖 Testar reCAPTCHA';
+      }
+    });
+
+    // Função para buscar endereço pelo CEP
+    async function fetchAddressByCEP(cep) {
+      const cleanCEP = cep.replace(/\D/g, '');
+      
+      if (cleanCEP.length !== 8) {
+        return;
+      }
+
+      try {
+        // Adicionar indicador de loading
+        postalCodeInput.classList.add('loading');
+        addressInput.disabled = true;
+        cityInput.disabled = true;
+        stateInput.disabled = true;
+
+        const response = await fetch(`https://viacep.com.br/ws/${cleanCEP}/json/`);
+        const data = await response.json();
+
+        if (data.erro) {
+          alert('CEP não encontrado!');
+          return;
+        }
+
+        // Preencher campos automaticamente
+        addressInput.value = data.logradouro || '';
+        cityInput.value = data.localidade || '';
+        stateInput.value = data.uf || '';
+
+        // Focar no campo de endereço se estiver vazio
+        if (!addressInput.value) {
+          addressInput.focus();
+        }
+
+      } catch (error) {
+        console.error('Erro ao buscar CEP:', error);
+        alert('Erro ao buscar CEP. Verifique sua conexão.');
+      } finally {
+        // Remover indicador de loading
+        postalCodeInput.classList.remove('loading');
+        addressInput.disabled = false;
+        cityInput.disabled = false;
+        stateInput.disabled = false;
+      }
+    }
+
+    // Formatar número do cartão enquanto digita
+    cardNumberInput.addEventListener('input', (e) => {
+      let value = e.target.value.replace(/\s+/g, '');
+      
+      // Detectar bandeira
+      if (value.length >= 4) {
+        const brand = GoPagSDK.detectCardBrand(value);
+        if (brand !== 'unknown') {
+          cardBrandSpan.textContent = brand;
+          cardBrandSpan.style.display = 'inline-block';
+        } else {
+          cardBrandSpan.style.display = 'none';
+        }
+      } else {
+        cardBrandSpan.style.display = 'none';
+      }
+
+      // Formatar com espaços
+      e.target.value = GoPagSDK.formatCardNumber(value);
+    });
+
+    // Formatar CEP enquanto digita e buscar endereço
+    let cepTimeout;
+    postalCodeInput.addEventListener('input', (e) => {
+      let value = e.target.value.replace(/\D/g, '');
+      if (value.length > 5) {
+        value = value.slice(0, 5) + '-' + value.slice(5, 8);
+      }
+      e.target.value = value;
+
+      // Limpar timeout anterior
+      clearTimeout(cepTimeout);
+
+      // Buscar endereço após 500ms de inatividade
+      const cleanCEP = value.replace(/\D/g, '');
+      if (cleanCEP.length === 8) {
+        cepTimeout = setTimeout(() => {
+          fetchAddressByCEP(value);
+        }, 500);
+      }
+    });
+
+    // Buscar endereço ao sair do campo CEP
+    postalCodeInput.addEventListener('blur', (e) => {
+      fetchAddressByCEP(e.target.value);
+    });
+
+    // Formatar telefone enquanto digita
+    phoneInput.addEventListener('input', (e) => {
+      e.target.value = e.target.value.replace(/\D/g, '');
+    });
+
+    // Converter estado para maiúsculas
+    stateInput.addEventListener('input', (e) => {
+      e.target.value = e.target.value.toUpperCase();
+    });
+
+    // Permitir apenas números em campos específicos
+    ['card-number', 'expiry-month', 'expiry-year', 'cvv'].forEach(id => {
+      document.getElementById(id).addEventListener('keypress', (e) => {
+        if (!/^\d$/.test(e.key) && e.key !== 'Backspace') {
+          e.preventDefault();
+        }
+      });
+    });
+
+    // Processar formulário
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      // Desabilitar botão
+      submitBtn.disabled = true;
+      submitBtn.textContent = '⏳ Processando...';
+      
+      // Esconder resultado anterior
+      resultDiv.style.display = 'none';
+
+      try {
+        // Coletar dados do cartão
+        const cardData = {
+          holder_name: document.getElementById('cardholder-name').value,
+          card_number: document.getElementById('card-number').value.replace(/\s+/g, ''),
+          expiration_month: document.getElementById('expiry-month').value,
+          expiration_year: document.getElementById('expiry-year').value,
+          security_code: document.getElementById('cvv').value
+        };
+
+        // Coletar dados de cobrança para 3DS
+        const billingData = {
+          address: addressInput.value,
+          city: cityInput.value,
+          postal_code: postalCodeInput.value.replace(/\D/g, ''),
+          state: stateInput.value,
+          country: 'BR',
+          email_address: document.getElementById('email').value,
+          phone_number: phoneInput.value
+        };
+
+        // Tokenizar
+        const result = await gopag.tokenize(cardData, {
+          billing: billingData
+        });
+
+        // Exibir resultado
+        if (result.success) {
+          showResult('success', '✅ Tokenização bem-sucedida!', result);
+          
+          // Aqui você enviaria o token para seu servidor
+          console.log('Token para enviar ao servidor:', result.card.token);
+          console.log('3DS Data:', result.three_d_secure);
+        } else {
+          showResult('error', '❌ Erro na tokenização', result);
+        }
+
+      } catch (error) {
+        showResult('error', '❌ Erro inesperado', { error: error.message });
+      } finally {
+        // Reabilitar botão
+        submitBtn.disabled = false;
+        submitBtn.textContent = '🔒 Tokenizar Cartão';
+      }
+    });
+
+    function showResult(type, title, data) {
+      resultDiv.className = `result ${type}`;
+      resultTitle.textContent = title;
+      
+      let content = '';
+      
+      if (type === 'success') {
+        // Check if it's a card tokenization result
+        if (data.card) {
+          content = `
+            <p><strong>Token:</strong> ${data.card.token}</p>
+            <p><strong>Card ID:</strong> ${data.card.id}</p>
+            <p><strong>Bandeira:</strong> ${data.card.brand}</p>
+            <p><strong>Primeiros 4 dígitos:</strong> ${data.card.first4}</p>
+            <p><strong>Últimos 4 dígitos:</strong> ${data.card.last4}</p>
+            <p><strong>Validade:</strong> ${data.card.expiration_month}/${data.card.expiration_year}</p>
+            <p><strong>Válido:</strong> ${data.card.is_valid ? 'Sim' : 'Não'}</p>
+            <p><strong>Tempo de processamento:</strong> ${data.processingTime}ms</p>
+            ${data.three_d_secure ? '<p><strong>3DS Device:</strong> Coletado ✓</p>' : ''}
+            ${data.three_d_secure?.billing ? '<p><strong>3DS Billing:</strong> Coletado ✓</p>' : ''}
+            <pre>${JSON.stringify(data, null, 2)}</pre>
+          `;
+        } 
+        // Check if it's a 3DS result
+        else if (data.three_d_secure) {
+          content = `
+            <p><strong>Device User Agent:</strong> ${data.three_d_secure.device.device.substring(0, 50)}...</p>
+            <p><strong>Color Depth:</strong> ${data.three_d_secure.device.colorDepth}</p>
+            <p><strong>Screen:</strong> ${data.three_d_secure.device.screenWidth}x${data.three_d_secure.device.screenHeight}</p>
+            <p><strong>Language:</strong> ${data.three_d_secure.device.language}</p>
+            <p><strong>Timezone Offset:</strong> ${data.three_d_secure.device.timezoneOffset}h</p>
+            ${data.three_d_secure.billing ? `<p><strong>Billing Address:</strong> ${data.three_d_secure.billing.address}</p>` : ''}
+            ${data.three_d_secure.billing ? `<p><strong>City:</strong> ${data.three_d_secure.billing.city}</p>` : ''}
+            ${data.three_d_secure.billing ? `<p><strong>State:</strong> ${data.three_d_secure.billing.state}</p>` : ''}
+            <pre>${JSON.stringify(data, null, 2)}</pre>
+          `;
+        }
+        // Check if it's a reCAPTCHA result with token
+        else if (data.token && data.action) {
+          content = `
+            <p><strong>reCAPTCHA Token:</strong> ${data.token.substring(0, 50)}...</p>
+            <p><strong>Action:</strong> ${data.action}</p>
+            <p><strong>Enabled:</strong> ${data.enabled ? 'Sim' : 'Não'}</p>
+            <p><strong>Status:</strong> Token válido ✓</p>
+            <pre>${JSON.stringify(data, null, 2)}</pre>
+          `;
+        }
+        // Check if reCAPTCHA is not configured
+        else if (data.message || data.enabled === false) {
+          content = `
+            <p><strong>Status:</strong> ${data.message || 'Not configured'}</p>
+            <p><strong>Enabled:</strong> ${data.enabled ? 'Sim' : 'Não'}</p>
+            <p><strong>Success:</strong> ${data.success ? 'Sim' : 'Não'}</p>
+            <pre>${JSON.stringify(data, null, 2)}</pre>
+          `;
+        }
+        // Generic success
+        else {
+          content = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        }
+      } else {
+        content = `
+          <p><strong>Erro:</strong> ${data.error || 'Unknown error'}</p>
+          ${data.details ? `<p><strong>Detalhes:</strong> ${JSON.stringify(data.details)}</p>` : ''}
+          <pre>${JSON.stringify(data, null, 2)}</pre>
+        `;
+      }
+      
+      resultContent.innerHTML = content;
+      resultDiv.style.display = 'block';
+      
+      // Scroll para o resultado
+      resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  </script>
+</body>
+</html>
