@@ -292,7 +292,7 @@
   <!-- <script src="../dist/gopag-sdk.umd.js"></script> -->
 
   <!-- SDK GOpag using CDN jsDelivr -->
-  <script src="https://cdn.jsdelivr.net/npm/js-gopag-sdk/dist/gopag-sdk.umd.js"></script>
+  <script src="https://unpkg.com/js-gopag-sdk@1.0.1/dist/gopag-sdk.umd.js"></script>
 
   <script>
     // Inicializar SDK
@@ -540,6 +540,7 @@
           // Aqui você enviaria o token para seu servidor
           console.log('Token para enviar ao servidor:', result.card.token);
           console.log('3DS Data:', result.three_d_secure);
+          console.log('Payload completo para enviar ao servidor, pciTokenSdk: ', result.pciTokenSdk);
         } else {
           showResult('error', '❌ Erro na tokenização', result);
         }
