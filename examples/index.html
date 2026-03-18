@@ -292,7 +292,7 @@
   <!-- <script src="../dist/gopag-sdk.umd.js"></script> -->
 
   <!-- SDK GOpag using CDN jsDelivr -->
-  <script src="https://unpkg.com/js-gopag-sdk@1.0.1/dist/gopag-sdk.umd.js"></script>
+  <script src="https://unpkg.com/js-gopag-sdk@1.0.3/dist/gopag-sdk.umd.js"></script>
 
   <script>
     // Inicializar SDK
@@ -580,11 +580,11 @@
         // Check if it's a 3DS result
         else if (data.three_d_secure) {
           content = `
-            <p><strong>Device User Agent:</strong> ${data.three_d_secure.device.device.substring(0, 50)}...</p>
-            <p><strong>Color Depth:</strong> ${data.three_d_secure.device.colorDepth}</p>
-            <p><strong>Screen:</strong> ${data.three_d_secure.device.screenWidth}x${data.three_d_secure.device.screenHeight}</p>
+            <p><strong>Device User Agent:</strong> ${data.three_d_secure.user_agent.substring(0, 50)}...</p>
+            <p><strong>Color Depth:</strong> ${data.three_d_secure.device.color_depth}</p>
+            <p><strong>Screen:</strong> ${data.three_d_secure.device.screen_width}x${data.three_d_secure.device.screen_height}</p>
             <p><strong>Language:</strong> ${data.three_d_secure.device.language}</p>
-            <p><strong>Timezone Offset:</strong> ${data.three_d_secure.device.timezoneOffset}h</p>
+            <p><strong>Timezone Offset:</strong> ${data.three_d_secure.device.time_zone_offset}h</p>
             ${data.three_d_secure.billing ? `<p><strong>Billing Address:</strong> ${data.three_d_secure.billing.address}</p>` : ''}
             ${data.three_d_secure.billing ? `<p><strong>City:</strong> ${data.three_d_secure.billing.city}</p>` : ''}
             ${data.three_d_secure.billing ? `<p><strong>State:</strong> ${data.three_d_secure.billing.state}</p>` : ''}

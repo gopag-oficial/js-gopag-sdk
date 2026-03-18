@@ -158,14 +158,13 @@ gopag.get3DSDeviceData().then(result => {
   if (result.success && result.enabled) {
     console.log('Device Data:', result.device);
     // {
-    //   device: "Mozilla/5.0...",
-    //   colorDepth: 24,
+    //   color_depth: 24,
     //   type: "BROWSER",
-    //   javaEnabled: false,
+    //   java_enabled: false,
     //   language: "pt-BR",
-    //   screenHeight: 1080,
-    //   screenWidth: 1920,
-    //   timezoneOffset: 3
+    //   screen_height: 1080,
+    //   screen_width: 1920,
+    //   time_zone_offset: 3
     // }
   }
 });
@@ -637,14 +636,13 @@ const brand = GoPagSDK.detectCardBrand('4111111111111111');
   },
   three_d_secure: { // if enabled
     device: {
-      device: "Mozilla/5.0 (Windows NT 10.0; Win64; x64)...",
-      colorDepth: 24,
+      color_depth: 24,
       type: "BROWSER",
-      javaEnabled: false,
+      java_enabled: false,
       language: "pt-BR",
-      screenHeight: 1080,
-      screenWidth: 1920,
-      timezoneOffset: 3
+      screen_height: 1080,
+      screen_width: 1920,
+      time_zone_offset: 3
     },
     billing: { // if billing data provided
       address: "Rua Example, 123",
@@ -653,8 +651,9 @@ const brand = GoPagSDK.detectCardBrand('4111111111111111');
       state: "go",
       country: "br",
       email_address: "user@example.com",
-      phone_number: 62991838359
-    }
+      phone_number: 62999999999
+    },
+    user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64)..."
   }
 }
 ```

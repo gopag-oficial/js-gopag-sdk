@@ -340,7 +340,7 @@ class GoPagSDK {
       // Combine device and billing data
       const three_d_secure = {
         user_agent: navigator.userAgent,
-        chanllenge_type: "DATA_ONLY",
+        challenge_type: "DATA_ONLY",
         device: deviceResult.device
       };
 
