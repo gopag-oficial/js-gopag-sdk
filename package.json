@@ -1,6 +1,6 @@
 {
   "name": "js-gopag-sdk",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "SDK JavaScript para tokenização de cartões de crédito GOPAG API, mantendo conformidade PCI DSS Zoop",
   "type": "module",
   "main": "dist/gopag-sdk.cjs.js",

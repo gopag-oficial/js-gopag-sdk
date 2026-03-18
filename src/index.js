@@ -219,14 +219,13 @@ class GoPagSDK {
 
       // Collect browser fingerprint data
       const device = {
-        device: navigator.userAgent,
-        colorDepth: screen.colorDepth,
+        color_depth: screen.colorDepth,
         type: 'BROWSER',
-        javaEnabled: navigator.javaEnabled(),
+        java_enabled: navigator.javaEnabled(),
         language: navigator.language || navigator.userLanguage,
-        screenHeight: screen.height,
-        screenWidth: screen.width,
-        timezoneOffset: new Date().getTimezoneOffset() / 60
+        screen_height: screen.height,
+        screen_width: screen.width,
+        time_zone_offset: new Date().getTimezoneOffset() / 60
       };
 
       return {
@@ -340,6 +339,8 @@ class GoPagSDK {
 
       // Combine device and billing data
       const three_d_secure = {
+        user_agent: navigator.userAgent,
+        chanllenge_type: "DATA_ONLY",
         device: deviceResult.device
       };
 
